@@ -1,0 +1,369 @@
+<!DOCTYPE html><html><head><title>js5</title><meta charset='utf-8'><link href='https://cdn.maxiang.io/res-min/themes/marxico.css' rel='stylesheet'><style>
+.note-content  {font-family: 'Helvetica Neue', Arial, 'Hiragino Sans GB', STHeiti, 'Microsoft YaHei', 'WenQuanYi Micro Hei', SimSun, Song, sans-serif;}
+
+</style></head><body><div id='preview-contents' class='note-content'>
+                        
+                    
+
+<div><div class="toc"><div class="toc">
+<ul>
+<li><a href="#js5">js5</a><ul>
+<li><a href="#单例模式">单例模式</a><ul>
+<li><a href="#命名冲突解决方法">命名冲突解决方法</a></li>
+<li><a href="#单利模式的优势">单利模式的优势</a></li>
+</ul>
+</li>
+<li><a href="#高级单例模式">高级单例模式</a></li>
+<li><a href="#工厂模式">工厂模式</a></li>
+<li><a href="#构造函数">构造函数</a><ul>
+<li><a href="#面向对象编程">面向对象编程</a></li>
+</ul>
+</li>
+<li><a href="#原型模式">原型模式</a><ul>
+<li><a href="#使用原型的目的">使用原型的目的</a></li>
+<li><a href="#以构造函数模式-原型模式-j-s面向对象模式">以构造函数模式 + 原型模式 = j s面向对象模式</a></li>
+<li><a href="#什么时候才能调用function">什么时候才能调用function(){}</a></li>
+<li><a href="#title"> </a></li>
+</ul>
+</li>
+<li><a href="#实例化对象上的原型链-构造函数的原型">实例化对象上的原型链 === 构造函数的原型</a><ul>
+<li><a href="#做题时">做题时：</a></li>
+</ul>
+</li>
+<li><a href="#函数的特殊性">函数的特殊性</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+<h1 id="js5">js5</h1>
+
+
+
+<h2 id="单例模式">单例模式</h2>
+
+<blockquote>
+  <p>单利：单独的实例 <br>
+  实例：把相同的事物总结（归纳、抽象）出来，形成一类事物，把描述事务的属性和方法具体化，这个具体的面熟的对象就是实例。 <br>
+  小例子： 教师-&gt;那么多职业中的一类职业（类）  语文老师 -&gt; （实例）</p>
+</blockquote>
+
+
+
+<h3 id="命名冲突解决方法">命名冲突解决方法</h3>
+
+<ol><li rel="1"><p>封闭空间</p>
+
+<blockquote>
+  <p>把一段代码放到一个函数中，当执行函数的时候，函数内的域和外界是互不干扰的     (function(){})</p>
+</blockquote></li>
+<li rel="2"><p>命名空间</p>
+
+<blockquote>
+  <p>把一些变量或者函数变成某个对象下的属性和方法，对象和对象之间的空间地址是不一样的，所以可以解决命名冲突问题 <br>
+  变量 <code>let a =20;</code> 属性 <code>obj.a=20;</code> <br>
+  函数<code>function fn(){}</code> 方法：<code>obj.fn = function(){}</code></p>
+</blockquote></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"> <span class="hljs-keyword">let</span> name = <span class="hljs-string">'王旭'</span>;
+</div><div class="hljs-line"> <span class="hljs-keyword">let</span> age  = <span class="hljs-number">30</span>;
+</div><div class="hljs-line"> <span class="hljs-keyword">let</span> say  = <span class="hljs-string">'我要薅头发'</span>;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"> <span class="hljs-keyword">let</span> name = <span class="hljs-string">'王世琦'</span>;
+</div><div class="hljs-line"> <span class="hljs-keyword">let</span> age  = <span class="hljs-number">16</span>;
+</div><div class="hljs-line"> <span class="hljs-keyword">let</span> say  = <span class="hljs-string">'一薅就掉，吓死人了'</span>;
+</div><div class="hljs-line">会存在命名冲突问题
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">用命名空间解决： <span class="hljs-keyword">let</span> obj = {
+</div><div class="hljs-line">                  <span class="hljs-attr">name</span>: <span class="hljs-string">'王旭'</span>,
+</div><div class="hljs-line">                  <span class="hljs-attr">age</span>: <span class="hljs-number">30</span>,
+</div><div class="hljs-line">                  <span class="hljs-attr">say</span>: <span class="hljs-string">'我要薅头发'</span>
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">             <span class="hljs-keyword">let</span> obj2 = {
+</div><div class="hljs-line">                 <span class="hljs-attr">name</span>: <span class="hljs-string">'王世琦'</span>,
+</div><div class="hljs-line">                 <span class="hljs-attr">age</span>: <span class="hljs-number">16</span>,
+</div><div class="hljs-line">                 <span class="hljs-attr">say</span>: <span class="hljs-string">'一薅就掉，吓死人了'</span>
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">用封闭空间解决：(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">            <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fn</span>(<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">                <span class="hljs-keyword">return</span> obj = {
+</div><div class="hljs-line">                    <span class="hljs-attr">name</span>: <span class="hljs-string">'王旭'</span>,
+</div><div class="hljs-line">                    <span class="hljs-attr">age</span>: <span class="hljs-number">30</span>,
+</div><div class="hljs-line">                    <span class="hljs-attr">say</span>: <span class="hljs-string">'我要薅头发'</span>
+</div><div class="hljs-line">                }
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(fn())
+</div><div class="hljs-line">        })();
+</div><div class="hljs-line">        (<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">            <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fn</span>(<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">                <span class="hljs-keyword">return</span> obj = {
+</div><div class="hljs-line">                    <span class="hljs-attr">name</span>: <span class="hljs-string">'王世琦'</span>,
+</div><div class="hljs-line">                    <span class="hljs-attr">age</span>: <span class="hljs-number">16</span>,
+</div><div class="hljs-line">                    <span class="hljs-attr">say</span>: <span class="hljs-string">'一薅就掉，吓死人了'</span>
+</div><div class="hljs-line">                }
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(fn())
+</div><div class="hljs-line">        })();
+</div></code></pre>
+
+
+
+<h3 id="单利模式的优势">单利模式的优势</h3>
+
+<ol><li rel="1"><p>解决命名冲突</p></li>
+<li rel="2"><p>把相同事务归为了一类，并且把这些属性或者方法放到了一个堆内存空间中存储</p></li>
+<li rel="3"><p>模块化的开发</p></li>
+</ol>
+
+
+
+<h2 id="高级单例模式">高级单例模式</h2>
+
+<blockquote>
+  <p>单例模式功能相对单一，用来描述具体的一个事务。要想让其复杂，那就需要高级单例模式。 <br>
+  使用一个匿名函数自执行函数，这个函数返回一个对象 <br>
+  高级单例模式，可以实现高内聚、低耦合；</p>
+</blockquote>
+
+<p>例：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line">  <span class="hljs-keyword">let</span> obj = (<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> num = <span class="hljs-number">0</span>;
+</div><div class="hljs-line">            <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fn</span>(<span class="hljs-params">n</span>) </span>{
+</div><div class="hljs-line">                <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt;= n; i++) {
+</div><div class="hljs-line">                    num = i;
+</div><div class="hljs-line">                }
+</div><div class="hljs-line">                <span class="hljs-keyword">return</span> num + <span class="hljs-string">'岁'</span>;
+</div><div class="hljs-line">            }<span class="hljs-comment">//函数的作用给num加上岁</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> {
+</div><div class="hljs-line">                <span class="hljs-attr">name</span>: <span class="hljs-string">'李兵'</span>,
+</div><div class="hljs-line">                <span class="hljs-attr">age</span>: fn(<span class="hljs-number">22</span>),
+</div><div class="hljs-line">                <span class="hljs-attr">fn</span>: fn, <span class="hljs-comment">//把fn函数赋值给fn,以obj.fn传出函数外</span>
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">        })();
+</div><div class="hljs-line">        <span class="hljs-built_in">console</span>.log(obj.fn())<span class="hljs-comment">//22岁</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> obj2 = (<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> age = obj.fn(<span class="hljs-number">30</span>);
+</div><div class="hljs-line">            <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fn</span>(<span class="hljs-params"></span>) </span>{ }
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(age);<span class="hljs-comment">//30岁</span>
+</div><div class="hljs-line">        })()
+</div><div class="hljs-line">        <span class="hljs-built_in">console</span>.log(obj)<span class="hljs-comment">//object{age: "22岁"</span>
+</div><div class="hljs-line">fn: ƒ fn(n)
+</div><div class="hljs-line">name: <span class="hljs-string">"李兵"</span>}
+</div><div class="hljs-line"><wbr>
+</div></code></pre>
+
+
+
+<h2 id="工厂模式">工厂模式</h2>
+
+<blockquote>
+  <p>目的是批量生成多个实例，通过传参去描述具体的实例，把生产后的对象返回到外界使用</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs gauss"><div class="hljs-line">批量生产机器人
+</div><div class="hljs-line">function <span class="hljs-function"><span class="hljs-keyword">fn</span><span class="hljs-params">(name, age)</span> {</span>
+</div><div class="hljs-line"><span class="hljs-function">            <span class="hljs-title">let</span> <span class="hljs-title">obj</span> = {}</span>; <span class="hljs-comment">//原材料</span>
+</div><div class="hljs-line">            <span class="hljs-comment">//加工</span>
+</div><div class="hljs-line">            obj.name = name;
+</div><div class="hljs-line">            obj.age = age;
+</div><div class="hljs-line">            <span class="hljs-comment">//出厂</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> obj;
+</div><div class="hljs-line">        }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> 机器人<span class="hljs-number">1</span>号 = <span class="hljs-function"><span class="hljs-keyword">fn</span><span class="hljs-params">('李永梅', <span class="hljs-number">8</span>)</span></span>;
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> 机器人<span class="hljs-number">2</span>号 = <span class="hljs-function"><span class="hljs-keyword">fn</span><span class="hljs-params">('席超', <span class="hljs-number">8</span>)</span></span>;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">        console.<span class="hljs-built_in">log</span>(机器人<span class="hljs-number">1</span>号);<span class="hljs-comment">//obj{age:8;name:'李永梅'};</span>
+</div><div class="hljs-line">        console.<span class="hljs-built_in">log</span>(机器人<span class="hljs-number">2</span>号);<span class="hljs-comment">//obj{age:8;name:'席超'};</span>
+</div></code></pre>
+
+
+
+<h2 id="构造函数">构造函数</h2>
+
+<blockquote>
+  <p>把属性或者方法挂在this上，然后去new这个函数；潜规则是构造函数首字母大写。 <br>
+  new 是一元运算符  -&gt; <strong>专门 运算 函数的</strong></p>
+  
+  <ol><li rel="1"><p>执行函数，不使用（）调用也是可以执行函数的，此时的（）只是为了传参</p></li>
+  <li rel="2"><p>构造函数（fn）中的this指向了当前实例。  跟普通函数比较把默认的window转成当前实例 <code>function Fn(){}</code> 构造函数   <code>Fn{}</code> 实例化对象</p></li>
+  <li rel="3"><p>return 的结果默认指向当前实例的this;有return 如果后面跟着的是一个基本数据类型，结果依然是实例，如果后面跟着的是一个引用类型，那么结果就是这个return后的引用类型</p></li>
+  </ol>
+  
+  </blockquote>
+
+
+<h3 id="面向对象编程">面向对象编程</h3>
+
+<blockquote>
+  <p>把描述相同的事务抽象出来，归为一类，把描述这个类的属性和方法挂在这个类的原型（prototype）上的一种编程方式就叫面向对象 <br>
+  抽象：抽离出来的相像的部分； <br>
+  js的面向对象特征： 抽象 封装 继承 多态</p>
+</blockquote>
+
+<p>类 -&gt; 构造函数  -&gt; 把相同的代码抽离出来归纳在一个函数中</p>
+
+<p>例：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-批量生产机器人 hljs javascript"><div class="hljs-line"> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Fn</span>(<span class="hljs-params">name, age</span>) </span>{
+</div><div class="hljs-line">            <span class="hljs-keyword">this</span>.name = name;
+</div><div class="hljs-line">            <span class="hljs-keyword">this</span>.age = age;
+</div><div class="hljs-line">            <span class="hljs-comment">//把用到的参数传进来即可</span>
+</div><div class="hljs-line">           <span class="hljs-comment">//默认返回this 即对应实例</span>
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-comment">//实例</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> 机器人<span class="hljs-number">1</span>号 = <span class="hljs-keyword">new</span> Fn(<span class="hljs-string">'李永梅'</span>, <span class="hljs-number">8</span>);
+</div><div class="hljs-line">        <span class="hljs-built_in">console</span>.log(机器人<span class="hljs-number">1</span>号);<span class="hljs-comment">//Fn{age:8,name:'李永梅'}</span>
+</div></code></pre>
+
+<p>注意：<code>{} =&gt; new Object</code>  <code>[] =&gt; new Array</code></p>
+
+
+
+<h2 id="原型模式">原型模式</h2>
+
+<blockquote>
+  <p>当定义一个函数的时候，这个函数自身有一些属性或者方法，其中有一个属性叫做prototype,这个属性就叫原型。 <br>
+   <em>* prototype为一个对象*</em> 它的用处是如果实例化对象上没有某个属性或者方法，还会去这个实例化对象的构造函数中的原型下去查找该属性或者方法。如果构造函数的原型上没有这个方法，那么还会去原型下的原型链（<em>proto</em>）中去寻找。找到Object.prototype <br>
+  <strong>换言之：构造函数的原型下的方法只给它的实例化对象使用</strong></p>
+</blockquote>
+
+
+
+<h3 id="使用原型的目的">使用原型的目的</h3>
+
+<blockquote>
+  <p>当构造函数中添加方法的时候，每new一次就生成一个同类方法，这些方法虽然同类但是各自不相等，这就导致如果new若干次，那么就会生成若干个一模一样的方法，这样对性能是不友好的，所以要使用原型的方法去把方法挂在原型上</p>
+</blockquote>
+
+
+
+<h3 id="以构造函数模式-原型模式-j-s面向对象模式">以构造函数模式 + 原型模式 = j s面向对象模式</h3>
+
+
+
+<h3 id="什么时候才能调用function">什么时候才能调用function(){}</h3>
+
+<ul><li><p>Fn.prototype.方法（）</p></li>
+<li><p>new Fn().方法（）</p></li>
+</ul>
+
+
+
+<h3 id="title"> </h3>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs maxima"><div class="hljs-line"><span class="hljs-built_in">let</span> arr = [];
+</div><div class="hljs-line"><span class="hljs-built_in">let</span> arr2 = [];
+</div><div class="hljs-line">console.<span class="hljs-built_in">log</span>(arr == arr2);//<span class="hljs-literal">false</span> 因为操作的地址不同
+</div><div class="hljs-line">// console.<span class="hljs-built_in">log</span>(arr.<span class="hljs-built_in">push</span> == arr2.<span class="hljs-built_in">push</span>);//<span class="hljs-literal">true</span> 因为arr 和arr2都是<span class="hljs-built_in">new</span> Array的实例   
+</div></code></pre>
+
+
+
+<h2 id="实例化对象上的原型链-构造函数的原型">实例化对象上的原型链 === 构造函数的原型</h2>
+
+<p>对象.<em>proto</em> ===函数.prototype <br>
+  对象上有原型链  -&gt; 指向构造函数的原型</p>
+
+
+
+<h3 id="做题时">做题时：</h3>
+
+<ol><li rel="1"><p>先看对象自身有没有这个属性或者方法 <br>
+            有就不找了 <br>
+            没有的话就接着找</p></li>
+<li rel="2"><p>通过对象的原型链找构造函数的原型 <br>
+            有就不找了 <br>
+            没有的话就接着找</p></li>
+<li rel="3"><p>因为函数的原型是个对象，对象身上有原型链，通过原型链又去找构造函数原型 <br>
+            有就不找了 <br>
+            没有的话就接着找 <br>
+例：</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fn</span>(<span class="hljs-params">name</span>) </span>{
+</div><div class="hljs-line">            <span class="hljs-keyword">this</span>.name = name;
+</div><div class="hljs-line">            <span class="hljs-comment">// this.say = function () {</span>
+</div><div class="hljs-line">            <span class="hljs-comment">//     console.log(this.name);//f.say 首先走这里 undefined</span>
+</div><div class="hljs-line">            <span class="hljs-comment">// }</span>
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        fn.prototype.say = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'原型下的'</span>); <span class="hljs-comment">// f.say当上面的 this.say没有时，会打印此处；</span>
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-built_in">Object</span>.prototype.say = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'对象的'</span>); <span class="hljs-comment">//f.say 当上面的 this.say和fn.prototype.say没有时，会打印此处；报错</span>
+</div><div class="hljs-line">            <span class="hljs-comment">//Function.prototype.say 没有的时候； Function.say() 走这里</span>
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-comment">// fn.say = function(){</span>
+</div><div class="hljs-line">        <span class="hljs-comment">//     console.log('fn的')//fn.say()首先走这里。</span>
+</div><div class="hljs-line">        <span class="hljs-comment">// }</span>
+</div><div class="hljs-line">        <span class="hljs-built_in">Function</span>.prototype.say = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Func'</span>);<span class="hljs-comment">//fn.say() 当fn里没有say的时候，走这里</span>
+</div><div class="hljs-line">            <span class="hljs-comment">// Function.say() 先走这里，看Function里有没有say</span>
+</div><div class="hljs-line">            <span class="hljs-comment">// Function.say -&gt; Function.__proto__ -&gt; Function.prototype</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">        }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> f = <span class="hljs-keyword">new</span> fn();
+</div><div class="hljs-line">        <span class="hljs-comment">// console.dir(f);</span>
+</div><div class="hljs-line">        <span class="hljs-comment">// f.say;</span>
+</div><div class="hljs-line">        f.say = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'自己的'</span>);<span class="hljs-comment">// f.say();先走这里  自身有say </span>
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-comment">//fn.say()//首先看fn上有没有say</span>
+</div><div class="hljs-line">        <span class="hljs-built_in">Function</span>.say();
+</div><div class="hljs-line">        <span class="hljs-built_in">console</span>.dir(fn)
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">       <span class="hljs-comment">// f.say();</span>
+</div></code></pre>
+
+
+
+<h2 id="函数的特殊性">函数的特殊性</h2>
+
+<p>实例是new构造函数出来的</p>
+
+<p>[] -&gt; new Array <br>
+  function fn(){} -&gt; new Function</p>
+
+<p>所以说，函数即是函数，又是对象(它是Function的实例化对象) <br>
+  函数即有原型，也有原型链，函数的原型上的属性或者方法只给它的 <br>
+  实例化对象使用。 <br>
+例：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs ada"><div class="hljs-line">  <span class="hljs-keyword">function</span> <span class="hljs-title">fn</span>(name) {
+</div><div class="hljs-line">            this.name = name;
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">  <span class="hljs-keyword">Function</span>.prototype.say = <span class="hljs-keyword">function</span> <span class="hljs-title"></span>() {
+</div><div class="hljs-line">            console.log('Func');
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        let f = <span class="hljs-keyword">new</span> fn();
+</div><div class="hljs-line">        // fn.say();
+</div><div class="hljs-line">        // <span class="hljs-keyword">Function</span>.say()
+</div><div class="hljs-line">        // <span class="hljs-keyword">new</span> <span class="hljs-keyword">Function</span>().say();
+</div><div class="hljs-line">        /*
+</div><div class="hljs-line">            fn.say -&gt; fn.__proto__ -&gt; <span class="hljs-keyword">Function</span>.prototype
+</div><div class="hljs-line">            <span class="hljs-keyword">Function</span>.say -&gt; <span class="hljs-keyword">Function</span>.__proto__ -&gt; <span class="hljs-keyword">Function</span>.prototype
+</div><div class="hljs-line">            <span class="hljs-keyword">new</span> <span class="hljs-keyword">Function</span>().say -&gt; 
+</div><div class="hljs-line">        */
+</div></code></pre></div></body></html>
