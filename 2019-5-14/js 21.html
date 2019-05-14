@@ -1,0 +1,465 @@
+<!DOCTYPE html><html><head><title>js 21</title><meta charset='utf-8'><link href='https://cdn.maxiang.io/res-min/themes/marxico.css' rel='stylesheet'><style>
+.note-content  {font-family: 'Helvetica Neue', Arial, 'Hiragino Sans GB', STHeiti, 'Microsoft YaHei', 'WenQuanYi Micro Hei', SimSun, Song, sans-serif;}
+
+</style></head><body><div id='preview-contents' class='note-content'>
+                        
+                    
+
+<div><div class="toc"><div class="toc">
+<ul>
+<li><a href="#js-21">js 21</a><ul>
+<li><a href="#bind">bind</a><ul>
+<li><a href="#函数的三种角色">函数的三种角色</a></li>
+<li><a href="#bind-1">bind:</a></li>
+<li><a href="#柯里化函数名字就是大高上currying">柯里化函数:名字就是大高上（Currying）</a></li>
+</ul>
+</li>
+<li><a href="#jquery">jquery</a><ul>
+<li><a href="#jquery是封装版js">jquery是封装版js</a></li>
+<li><a href="#选择器">选择器:</a></li>
+<li><a href="#jquery-使用步骤">jquery 使用步骤</a></li>
+<li><a href="#原生对象和jq的相互转化">原生对象和JQ的相互转化</a></li>
+</ul>
+</li>
+<li><a href="#选项卡布局">选项卡布局</a></li>
+<li><a href="#全选">全选</a></li>
+<li><a href="#jquery架构">jquery架构</a></li>
+<li><a href="#jquery版bom">jquery版BOM</a></li>
+<li><a href="#jquery中的事件">jquery中的事件</a><ul>
+<li><a href="#事件委托">事件委托</a></li>
+</ul>
+</li>
+<li><a href="#发布订阅模式">发布订阅模式</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+<h1 id="js-21">js 21</h1>
+
+
+
+<h2 id="bind">bind</h2>
+
+
+
+<h3 id="函数的三种角色">函数的三种角色</h3>
+
+<ul><li><p>普通函数 function fn(){}</p></li>
+<li><p>构造函数 function Fn(){} 专门构造函数</p></li>
+<li><p>实例  function(){} -&gt;为Function实例</p></li>
+</ul>
+
+
+
+<h3 id="bind-1">bind:</h3>
+
+<blockquote>
+  <p>改变this指向，无数个个参数，设置this,无数个 <br>
+  返回值是一个新的函数</p>
+</blockquote>
+
+
+
+<h3 id="柯里化函数名字就是大高上currying">柯里化函数:名字就是大高上（Currying）</h3>
+
+<blockquote>
+  <p>函数嵌套函数，子函数用父函数的参数，通常子函数自己还有参数，父函数返回子函数，子函数的运行结果还要和父函数的参数有关联并且子函数被外界引用。</p>
+</blockquote>
+
+<p>例：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs actionscript"><div class="hljs-line">  需求:
+</div><div class="hljs-line">     <span class="hljs-number">1.</span>改变<span class="hljs-keyword">this</span>
+</div><div class="hljs-line">     <span class="hljs-number">2.</span>要传参
+</div><div class="hljs-line">     <span class="hljs-number">3.</span>要<span class="hljs-keyword">new</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//context 就是改变this的参数</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//Function.prototype.bind()  fn.bind()</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//当需要在bind上写多个参数的时候，就需要剩余运算符，arg除了第一个参数以外的参数</span>
+</div><div class="hljs-line">    Function.prototype.bind = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(context,<span class="hljs-rest_arg">...arg</span>)</span></span>{
+</div><div class="hljs-line">        <span class="hljs-comment">// console.log(this); //实例fn</span>
+</div><div class="hljs-line">        let that = <span class="hljs-keyword">this</span>;
+</div><div class="hljs-line">        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bound</span><span class="hljs-params">(<span class="hljs-rest_arg">...args</span>)</span></span>{
+</div><div class="hljs-line">            <span class="hljs-comment">// console.log(arg);</span>
+</div><div class="hljs-line">            <span class="hljs-comment">// that.call(context,...arg);</span>
+</div><div class="hljs-line">            <span class="hljs-comment">//合并数组arg.concat(args)</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">            <span class="hljs-comment">//如果是构造函数this就不能变</span>
+</div><div class="hljs-line">            <span class="hljs-comment">//检测this是不是bound构造出来的</span>
+</div><div class="hljs-line">            <span class="hljs-comment">//如果是就说明new了bound</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span> <span class="hljs-keyword">instanceof</span> bound){
+</div><div class="hljs-line">                that.apply(<span class="hljs-keyword">this</span>,[...arg,...args]);
+</div><div class="hljs-line">            }<span class="hljs-keyword">else</span>{
+</div><div class="hljs-line">                that.apply(context,[...arg,...args]);
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">            <span class="hljs-comment">// console.log(this);</span>
+</div><div class="hljs-line">        }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">        <span class="hljs-comment">//要把fn的prototype下的方法给bound</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span>.prototype){
+</div><div class="hljs-line">            bound.prototype = <span class="hljs-keyword">this</span>.prototype;
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> bound;
+</div><div class="hljs-line">    }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fn</span><span class="hljs-params">(a,b,c,d,e)</span></span>{
+</div><div class="hljs-line">        <span class="hljs-comment">// console.log(this,a,b,c,d,e);</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.a = a;
+</div><div class="hljs-line">        console.log(<span class="hljs-keyword">this</span>.aaa);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    fn.prototype.aaa = <span class="hljs-number">20</span>;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">//fn{a:1}</span>
+</div><div class="hljs-line">    <span class="hljs-comment">// fn();</span>
+</div><div class="hljs-line">    let f = fn.bind(document,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>);
+</div><div class="hljs-line">    console.log(<span class="hljs-keyword">new</span> f(<span class="hljs-number">5</span>));
+</div></code></pre>
+
+
+
+<h2 id="jquery">jquery</h2>
+
+<blockquote>
+  <p>jQuery  -&gt; js的类库 <br>
+  把若干的常用方法封装起来了  <br>
+  至少现在还有50%的公司在用（必选项） <br>
+  英文网址： <a href="https://api.jquery.com/" target="_blank">https://api.jquery.com/</a> <br>
+  中文网址：       <a href="https://www.jquery123.com/" target="_blank">https://www.jquery123.com/</a></p>
+</blockquote>
+
+
+
+<h3 id="jquery是封装版js">jquery是封装版js</h3>
+
+<blockquote>
+  <p>吃的少干的多，兼容低版本1.72、方便操作DOM、封装ajax、封装了更具方法 <br>
+  还提供了接口写插件(去丰富jquery)</p>
+</blockquote>
+
+<p><strong>注意</strong>：使用jq就是换种方法去写代码</p>
+
+
+
+<h3 id="选择器">选择器:</h3>
+
+<blockquote>
+  <p>只要会css选择器，就会jquery的选择器</p>
+</blockquote>
+
+
+
+<h3 id="jquery-使用步骤">jquery 使用步骤</h3>
+
+<ol><li rel="1"><p>引入jquery</p></li>
+<li rel="2"><p>选择器</p>
+
+<ul>
+<li><p><code>#</code>   <code>$(#xx)</code></p></li>
+<li><p><code>.</code></p></li>
+<li><p>标签选择器</p></li>
+<li><p>属性选择器 <code>input[type="text"]</code></p></li></ul></li>
+<li rel="3"><p>操作属性</p>
+
+<ul>
+<li><p>innerHTML    <code>html()</code> </p></li>
+<li><p>innerText    <code>text()</code></p></li>
+<li><p>value        <code>val()</code></p></li>
+<li><p>id           <code>attr(id,'box')</code></p></li>
+<li><p>className    </p>
+
+<ul>
+<li><p><code>addClass</code>   </p></li>
+<li><p><code>removeClass</code>  </p></li>
+<li><p><code>replaceClass</code></p></li></ul></li>
+<li><p>style        <code>css()</code></p></li>
+<li><p>cssText      <code>css({})</code></p></li></ul></li>
+</ol>
+
+
+
+<h3 id="原生对象和jq的相互转化">原生对象和JQ的相互转化</h3>
+
+<ul><li><p>原生对象转JQ对象 -&gt; $(原生对象)</p></li>
+<li><p>jQ对象转原生 -&gt; <code>$(xx)[num] 加下标  || $("img").get(0);</code></p></li>
+</ul>
+
+<p><strong>注意： $ 就是jquery对象</strong> <br>
+例：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs arduino"><div class="hljs-line">   $(<span class="hljs-string">'#box'</span>).css({
+</div><div class="hljs-line">         <span class="hljs-built_in">width</span>:<span class="hljs-number">100</span>,
+</div><div class="hljs-line">         <span class="hljs-built_in">height</span>:<span class="hljs-number">100</span>,
+</div><div class="hljs-line">         <span class="hljs-built_in">background</span>:<span class="hljs-string">'red'</span>
+</div><div class="hljs-line">     }).<span class="hljs-built_in">click</span>(()=&gt;{
+</div><div class="hljs-line">         $(<span class="hljs-string">'#box'</span>).animate({
+</div><div class="hljs-line">             <span class="hljs-built_in">width</span>:<span class="hljs-number">300</span>,
+</div><div class="hljs-line">             <span class="hljs-built_in">height</span>:<span class="hljs-number">300</span>
+</div><div class="hljs-line">         });
+</div><div class="hljs-line">     });
+</div></code></pre>
+
+<p>例2：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs awk"><div class="hljs-line">$(<span class="hljs-string">'li:odd'</span>).css(<span class="hljs-string">'background'</span>,<span class="hljs-string">'red'</span>); <span class="hljs-regexp">//</span>奇数(从<span class="hljs-number">0</span>开始)
+</div><div class="hljs-line">$(<span class="hljs-string">'li:even'</span>).css(<span class="hljs-string">'background'</span>,<span class="hljs-string">'green'</span>);<span class="hljs-regexp">//</span>偶数(从<span class="hljs-number">0</span>开始)
+</div><div class="hljs-line">$(<span class="hljs-string">'li:gt(5)'</span>).css(<span class="hljs-string">'background'</span>,<span class="hljs-string">'yellow'</span>)<span class="hljs-regexp">//</span>大于某个值  $(<span class="hljs-string">'li:lt(3)'</span>).css(<span class="hljs-string">'background'</span>,<span class="hljs-string">'pink'</span>);<span class="hljs-regexp">//</span>小于某个值
+</div></code></pre>
+
+
+
+<h2 id="选项卡布局">选项卡布局</h2>
+
+<blockquote>
+  <p>divs.eq(数字)  div中的第某个元素，是个jquery对象 <br>
+  index(‘缩小范围’)  自动去找某个元素基于父级的子级为第几个元素</p>
+</blockquote>
+
+<p>例：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"> <span class="hljs-comment">//给所有按钮加点击事件函数</span>
+</div><div class="hljs-line">    btns.click(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line">        <span class="hljs-comment">//当点击某个按钮的时候把所有的active清空</span>
+</div><div class="hljs-line">        btns.removeClass(<span class="hljs-string">'active'</span>);
+</div><div class="hljs-line">        <span class="hljs-comment">//把所有div中的show清空</span>
+</div><div class="hljs-line">        divs.removeClass(<span class="hljs-string">'show'</span>);
+</div><div class="hljs-line">        <span class="hljs-comment">//当前按钮的class名变成active</span>
+</div><div class="hljs-line">        $(<span class="hljs-keyword">this</span>).addClass(<span class="hljs-string">'active'</span>);
+</div><div class="hljs-line">        <span class="hljs-comment">//让div中个对应按钮索引的div的className换成show</span>
+</div><div class="hljs-line">        divs.eq($(<span class="hljs-keyword">this</span>).index(<span class="hljs-string">'button'</span>)).addClass(<span class="hljs-string">'show'</span>);
+</div><div class="hljs-line">    });
+</div><div class="hljs-line"><wbr>
+</div></code></pre>
+
+<p>等价于</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs matlab"><div class="hljs-line">btns.click(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span>{    $<span class="hljs-params">(this)</span>.<span class="hljs-title">addClass</span><span class="hljs-params">('active')</span>.<span class="hljs-title">siblings</span><span class="hljs-params">()</span>.<span class="hljs-title">removeClass</span><span class="hljs-params">('active')</span>;    <span class="hljs-title">divs</span>.<span class="hljs-title">eq</span><span class="hljs-params">($(this)</span>.<span class="hljs-title">index</span><span class="hljs-params">()</span>).<span class="hljs-title">addClass</span><span class="hljs-params">('show')</span>.<span class="hljs-title">siblings</span><span class="hljs-params">()</span>.<span class="hljs-title">removeClass</span><span class="hljs-params">('show')</span>;</span>
+</div><div class="hljs-line">     });
+</div></code></pre>
+
+
+
+<h2 id="全选">全选</h2>
+
+<blockquote>
+  <p>prop 复选框使用     <code>$('li').each(function(i,ele){})</code> <br>
+  例：</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"> all.onclick = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{        $(<span class="hljs-string">'input'</span>).prop(<span class="hljs-string">'checked'</span>,<span class="hljs-literal">true</span>);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    no.onclick = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{       $(<span class="hljs-string">'input'</span>).prop(<span class="hljs-string">'checked'</span>,<span class="hljs-literal">false</span>);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    reverse.onclick = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line">        $(<span class="hljs-string">'input'</span>).each(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">i,ele</span>)</span>{ <span class="hljs-comment">//ele是原生对象</span>
+</div><div class="hljs-line">            <span class="hljs-comment">// console.log(ele)</span>
+</div><div class="hljs-line">            <span class="hljs-comment">//获取当前input的checked，返回布尔值</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span>( $(ele).prop(<span class="hljs-string">'checked'</span>) ){
+</div><div class="hljs-line">                $(ele).prop(<span class="hljs-string">'checked'</span>,<span class="hljs-literal">false</span>);
+</div><div class="hljs-line">            }<span class="hljs-keyword">else</span>{               $(ele).prop(<span class="hljs-string">'checked'</span>,<span class="hljs-literal">true</span>);
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">        });
+</div><div class="hljs-line">    }
+</div></code></pre>
+
+
+
+<h2 id="jquery架构">jquery架构</h2>
+
+<blockquote>
+  <p>不带min为学习版，可以去看里面的代码 <br>
+  <a href="http://jquery.cuishifeng.cn/jQuery_selector_context.html" target="_blank">http://jquery.cuishifeng.cn/jQuery_selector_context.html</a></p>
+</blockquote>
+
+<ul><li><p>匿名函数自执行,为了不让外界的代码影响到里面的代码(函数内的代码不受外界干扰) <br>
+但是，这样做外界就拿不到里面的函数了，所以jQ做了一件事 <br>
+把jQuery挂在了window下 <br>
+外界就能使用</p>
+
+<ul>
+<li><p>return</p></li>
+<li><p>把变量挂全局 <br>
+var undefined = 10; <br>
+console.log(undefined);</p></li></ul></li>
+<li><p>无new化操作 <br>
+不在外面new,在里面new <br>
+不new自己，new了个其他函数，这个其他函数又拥有 <br>
+jquery函数原型下的所有方法</p></li>
+<li><p>链式调用</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs elixir"><div class="hljs-line"><span class="hljs-variable">$(</span><span class="hljs-string">'li'</span>).css(<span class="hljs-string">'width'</span>,<span class="hljs-string">'200px'</span>).css(<span class="hljs-string">'height'</span>,<span class="hljs-string">'200px'</span>);
+</div></code></pre>
+
+<p>例：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line">    (<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">global,factory</span>)</span>{
+</div><div class="hljs-line">        factory(global);
+</div><div class="hljs-line">        <span class="hljs-comment">/*</span>
+</div><div class="hljs-line"><span class="hljs-comment">            判断是否为window环境下，如果不是undefined那么当前</span>
+</div><div class="hljs-line"><span class="hljs-comment">            环境就是window，否则为this</span>
+</div><div class="hljs-line"><span class="hljs-comment">        */</span>
+</div><div class="hljs-line">    })(<span class="hljs-keyword">typeof</span> <span class="hljs-built_in">window</span> !== <span class="hljs-string">'undefined'</span>?<span class="hljs-built_in">window</span>:<span class="hljs-keyword">this</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">global,noGlobal</span>)</span>{
+</div><div class="hljs-line">        <span class="hljs-comment">//noGlobal 为undefined，因为在低版本下undefined会被修改,函数不传参一定是undefined</span>
+</div><div class="hljs-line">        <span class="hljs-comment">/*</span>
+</div><div class="hljs-line"><span class="hljs-comment">            如果自己调用自己，就递归了</span>
+</div><div class="hljs-line"><span class="hljs-comment">            如何才能让其不递归呢？</span>
+</div><div class="hljs-line"><span class="hljs-comment">            1.不自己调用自己就不会递归</span>
+</div><div class="hljs-line"><span class="hljs-comment">            2.还能使用jQuery原型上的方法</span>
+</div><div class="hljs-line"><span class="hljs-comment">            {</span>
+</div><div class="hljs-line"><span class="hljs-comment">                0:xxx,</span>
+</div><div class="hljs-line"><span class="hljs-comment">                1:xxx,</span>
+</div><div class="hljs-line"><span class="hljs-comment">                length:2</span>
+</div><div class="hljs-line"><span class="hljs-comment">            }</span>
+</div><div class="hljs-line"><span class="hljs-comment">        */</span>
+</div><div class="hljs-line">        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">jQuery</span>(<span class="hljs-params">selector</span>)</span>{
+</div><div class="hljs-line">           <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> jQuery.fn(selector);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        jQuery.fn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">selector</span>)</span>{
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> ele = <span class="hljs-built_in">document</span>.querySelectorAll(selector);
+</div><div class="hljs-line">            <span class="hljs-comment">// console.log(ele);</span>
+</div><div class="hljs-line">            <span class="hljs-comment">//循环获取的元素，把每个元素挂在实例上</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i=<span class="hljs-number">0</span>;i&lt;ele.length;i++){
+</div><div class="hljs-line">                <span class="hljs-keyword">this</span>[i] = ele[i];
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">            <span class="hljs-keyword">this</span>.length = ele.length;
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        jQuery.prototype.trim = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">str</span>)</span>{
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> str.replace(<span class="hljs-regexp">/^\s+|\s+$/g</span>,<span class="hljs-string">''</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        jQuery.prototype.css = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> arg = <span class="hljs-built_in">Array</span>.prototype.slice.call(<span class="hljs-built_in">arguments</span>);
+</div><div class="hljs-line">            <span class="hljs-comment">//如果参数为2个，就是设置，有可能是批量设置</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span>(arg.length === <span class="hljs-number">2</span>){
+</div><div class="hljs-line">                <span class="hljs-comment">//循环this的每一项</span>
+</div><div class="hljs-line">                <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i=<span class="hljs-number">0</span>;i&lt;<span class="hljs-keyword">this</span>.length;i++){
+</div><div class="hljs-line">                    <span class="hljs-comment">//把每项的样式设置成参数值即可</span>
+</div><div class="hljs-line">                    <span class="hljs-keyword">this</span>[i].style[arg[<span class="hljs-number">0</span>]] = arg[<span class="hljs-number">1</span>];
+</div><div class="hljs-line">                }
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'进了css'</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">       <span class="hljs-comment">/*</span>
+</div><div class="hljs-line"><span class="hljs-comment">            让 jQuery.fn.prototype 等于 jQuery.prototype</span>
+</div><div class="hljs-line"><span class="hljs-comment">            当new jQuery.fn 这个实例时上面就有 jQuery原型下的所有方法</span>
+</div><div class="hljs-line"><span class="hljs-comment">        */</span>
+</div><div class="hljs-line">        jQuery.fn.prototype = jQuery.prototype;
+</div><div class="hljs-line">        <span class="hljs-comment">// 把jQuery暴露到了全局</span>
+</div><div class="hljs-line">        global.jQuery  = global.$ = jQuery;
+</div><div class="hljs-line">    });
+</div><div class="hljs-line">    <span class="hljs-keyword">var</span> jQuery = <span class="hljs-number">10</span>;
+</div><div class="hljs-line">    <span class="hljs-comment">// var lis = new $('li');  //$是个函数名</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">var</span> lis = $(<span class="hljs-string">'li'</span>); <span class="hljs-comment">//不想在外面new</span>
+</div><div class="hljs-line">    lis.css(<span class="hljs-string">'background'</span>,<span class="hljs-string">'red'</span>).css(<span class="hljs-string">'width'</span>,<span class="hljs-string">'200px'</span>);
+</div></code></pre>
+
+
+
+<h2 id="jquery版bom">jquery版BOM</h2>
+
+<ul><li><p>append 后添加</p></li>
+<li><p>remove</p></li>
+<li><p>prepend(content)  前添加</p></li>
+<li><p>siblings 兄弟</p></li>
+<li><p>parent 父级</p></li>
+</ul>
+
+<p>例：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs ruby"><div class="hljs-line">$(<span class="hljs-string">'#txt'</span>).keyup(function(ev){
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span>(ev.keyCode === <span class="hljs-number">13</span>){
+</div><div class="hljs-line">           let val = $(<span class="hljs-string">'#txt'</span>)[<span class="hljs-number">0</span>].value;
+</div><div class="hljs-line">        <span class="hljs-regexp">//</span>    $(<span class="hljs-string">'#ul'</span>).append($(<span class="hljs-string">'&lt;li&gt;'</span>+val+<span class="hljs-string">'&lt;/li&gt;'</span>));
+</div><div class="hljs-line">           $(<span class="hljs-string">'#ul'</span>).prepend($(<span class="hljs-string">'&lt;li&gt;'</span>+val+<span class="hljs-string">'&lt;/li&gt;'</span>));
+</div><div class="hljs-line">           $(<span class="hljs-string">'#txt'</span>).val(<span class="hljs-string">''</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    });
+</div></code></pre>
+
+
+
+<h2 id="jquery中的事件">jquery中的事件</h2>
+
+<blockquote>
+  <p>jq中所有的事件都为事件绑定 <br>
+   click,mousedown..都有on()二次封装</p>
+</blockquote>
+
+
+
+<h3 id="事件委托">事件委托</h3>
+
+<ul><li><p><code>on('不带On的事件名','事件源元素',事件函数)</code>  事件委托</p></li>
+<li><p>解绑为<code>off()</code> <br>
+<strong>注意：jq中的ev是二次封装的对象</strong></p></li>
+<li><p><code>ev.originalEvent</code>  原生事件对象</p></li>
+<li><p><code>return false;</code> 事件的冒泡和事件的阻止默认行为</p></li>
+</ul>
+
+<p>例：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line">$(<span class="hljs-string">'#box'</span>).on(<span class="hljs-string">'mouseover'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ev</span>)</span>{
+</div><div class="hljs-line">        <span class="hljs-built_in">console</span>.log(ev);
+</div><div class="hljs-line">        $(<span class="hljs-keyword">this</span>).css(<span class="hljs-string">'background'</span>,<span class="hljs-string">'red'</span>);
+</div><div class="hljs-line">        <span class="hljs-comment">//在绑定click之前，解除上次click，触发的时候始终就一个</span>
+</div><div class="hljs-line">        $(<span class="hljs-string">'button'</span>).off(<span class="hljs-string">'click.bbb'</span>);
+</div><div class="hljs-line">        $(<span class="hljs-string">'button'</span>).on(<span class="hljs-string">'click.bbb'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'请求'</span>);
+</div><div class="hljs-line">        });
+</div><div class="hljs-line">        $(<span class="hljs-string">'button'</span>).on(<span class="hljs-string">'click.aaa'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'请求2'</span>);
+</div><div class="hljs-line">        });
+</div><div class="hljs-line">    })
+</div><div class="hljs-line">    $(<span class="hljs-string">'#box'</span>).on(<span class="hljs-string">'mouseout'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line">        $(<span class="hljs-keyword">this</span>).css(<span class="hljs-string">'background'</span>,<span class="hljs-string">'#000'</span>);
+</div><div class="hljs-line">    });
+</div></code></pre>
+
+
+
+<h2 id="发布订阅模式">发布订阅模式</h2>
+
+<ul><li><p>订阅模式  :document.addEventListener(‘click’,fn);</p></li>
+<li><p>发布模式:真的点击document</p></li>
+<li><p><code>let event = document.createEvent('HTMLEvents')</code>  创建一个事件对象</p></li>
+<li><p><code>event.initEvent('事件名',false,false)</code> 初始化事件</p></li>
+<li><p><code>element.dispatchEvent(event)</code> 发布 <br>
+ <strong>注意：初始化，事件类型，是否冒泡，是否阻止浏览器的默认行为</strong> <br>
+例：</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"> <span class="hljs-keyword">let</span> event = <span class="hljs-built_in">document</span>.createEvent(<span class="hljs-string">'HTMLEvents'</span>);
+</div><div class="hljs-line">    event.initEvent(<span class="hljs-string">'上滚'</span>,<span class="hljs-literal">false</span>,<span class="hljs-literal">false</span>);
+</div><div class="hljs-line">    <span class="hljs-built_in">document</span>.onmousewheel = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ev</span>)</span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span>(ev.wheelDelta &gt; <span class="hljs-number">0</span>){
+</div><div class="hljs-line">            <span class="hljs-built_in">document</span>.dispatchEvent(event);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    }
+</div></code></pre></div></body></html>
