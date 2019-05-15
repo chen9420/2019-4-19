@@ -1,0 +1,401 @@
+<!DOCTYPE html><html><head><title>js 22</title><meta charset='utf-8'><link href='https://cdn.maxiang.io/res-min/themes/marxico.css' rel='stylesheet'><style>
+.note-content  {font-family: 'Helvetica Neue', Arial, 'Hiragino Sans GB', STHeiti, 'Microsoft YaHei', 'WenQuanYi Micro Hei', SimSun, Song, sans-serif;}
+
+</style></head><body><div id='preview-contents' class='note-content'>
+                        
+                    
+
+<div><div class="toc"><div class="toc">
+<ul>
+<li><a href="#js-22">js 22</a><ul>
+<li><a href="#jq复习">jQ复习</a><ul>
+<li><a href="#选择器">选择器</a></li>
+<li><a href="#属性操作">属性操作:</a></li>
+<li><a href="#dom">DOM</a></li>
+<li><a href="#事件">事件</a></li>
+</ul>
+</li>
+<li><a href="#发布订阅">发布订阅</a><ul>
+<li><a href="#订阅">订阅</a></li>
+<li><a href="#发布">发布</a></li>
+<li><a href="#分析过程">分析过程</a></li>
+<li><a href="#面向对象版发布订阅">面向对象版发布订阅</a></li>
+</ul>
+</li>
+<li><a href="#jq的插件接口">jq的插件接口</a><ul>
+<li><a href="#工具方法">工具方法</a></li>
+<li><a href="#extend">$.extend();</a></li>
+<li><a href="#功能方法">功能方法</a></li>
+</ul>
+</li>
+<li><a href="#jq运动">jq运动</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+<h1 id="js-22">js 22</h1>
+
+
+
+<h2 id="jq复习">jQ复习</h2>
+
+
+
+<h3 id="选择器">选择器</h3>
+
+<ul><li><p>$(‘#’)</p></li>
+<li><p>.</p></li>
+<li><p>tagName</p></li>
+<li><p>属性选择</p></li>
+<li><p>input[type=”button”]</p></li>
+<li><p>li:gt()</p></li>
+<li><p>li:lt()</p></li>
+<li><p>li:odd</p></li>
+<li><p>li:even</p></li>
+<li><p>li.eq(0)</p></li>
+<li><p>li.get(0)</p></li>
+</ul>
+
+
+
+<h3 id="属性操作">属性操作:</h3>
+
+<ul><li><p>html()  <code>html('&lt;li&gt;&lt;/li&gt;')</code></p></li>
+<li><p>text()</p></li>
+<li><p>val()</p></li>
+<li><p>attr()</p></li>
+<li><p>removeAttr()</p></li>
+<li><p>prop</p></li>
+<li><p>css()</p></li>
+<li><p>index(‘设置范围’)</p></li>
+</ul>
+
+
+
+<h3 id="dom">DOM</h3>
+
+<ul><li><p>parent()</p></li>
+<li><p>children</p></li>
+<li><p>sibilings(‘设置范围’)</p></li>
+<li><p><code>$('&lt;li&gt;&lt;/li&gt;')</code> 添加</p></li>
+<li><p>append</p></li>
+<li><p>prepend</p></li>
+<li><p>remove</p></li>
+</ul>
+
+
+
+<h3 id="事件">事件</h3>
+
+<ul><li><p>mouseover</p></li>
+<li><p>mouseout</p></li>
+<li><p>click <br>
+….</p></li>
+<li><p>on(‘事件名’,’事件源’,function(){});</p></li>
+<li><p>on(‘事件名’,function(){});</p></li>
+<li><p>off(‘click.aa’)</p></li>
+<li><p>trigger() 方法触发被选元素的指定事件类型</p></li>
+<li><p>delegate 的原理</p>
+
+<ul>
+<li><p>事件委托-&gt; </p></li></ul></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line">$(<span class="hljs-string">'ul'</span>).on(<span class="hljs-string">'click'</span>,<span class="hljs-string">'li'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{})
+</div></code></pre>
+
+<p>例：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-built_in">console</span>.log($(<span class="hljs-string">'#box'</span>).offset().top);<span class="hljs-comment">//绝对位置</span>
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log($(<span class="hljs-string">'#box'</span>).position().top)<span class="hljs-comment">//相对父级的位置</span>
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log($(<span class="hljs-built_in">document</span>).scrollTop());<span class="hljs-comment">//滚动距离</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">//在移入box的时候，让btn的点击事件调用   $('#box').mouseover(function(){      $('#btn').trigger('click');</span>
+</div><div class="hljs-line">    });
+</div></code></pre>
+
+
+
+<h2 id="发布订阅">发布订阅</h2>
+
+
+
+<h3 id="订阅">订阅</h3>
+
+<blockquote>
+  <p>订阅就是一个收集器，收集事件名和函数，当某个条件成立的时候，批量执行函数 <br>
+  <code>document.addEventListener('上滚',fn)</code> <br>
+  <code>document.addEventListener('上滚',fn2)</code></p>
+</blockquote>
+
+<h3 id="发布">发布</h3>
+
+<blockquote>
+  <p>发布 <code>document.dispatch(ev);</code></p>
+</blockquote>
+
+
+
+<h3 id="分析过程">分析过程</h3>
+
+<ol><li rel="1"><p>{ <br>
+        点击:[fn] <br>
+    }</p></li>
+<li rel="2"><p>看看这个ele下有没有区分事件的{}，如果有那么就在刚才这个{}下继续添加事件以及函数，没有就创建一个新的{}  <code>ele.bindEvent  -&gt; undefined || {}</code></p></li>
+<li rel="3"><p>第二次的时候ele.bindEvent已经为一个对象了，就不会走||，在以前的对象下添加事件  <code>ele.bindEvent = {}</code></p></li>
+<li rel="4"><p>事件名不存在，不存在就创建一个事件和数组，进行添加函数</p></li>
+</ol>
+
+<pre class="prettyprint hljs-dark"><code class="hljs prolog"><div class="hljs-line"> obj = {
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    obj[<span class="hljs-string">'点击'</span>] -&gt; undefined
+</div><div class="hljs-line">    obj = {
+</div><div class="hljs-line">        点击:[fn]
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    obj = {
+</div><div class="hljs-line">        点击:[fn,fn2],
+</div><div class="hljs-line">        上移:[]
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">   obj[<span class="hljs-string">'点击'</span>]
+</div><div class="hljs-line">    // obj[<span class="hljs-string">'上滚'</span>]
+</div></code></pre>
+
+<ol start="5"><li rel="5"><p>发布: <br>
+当某个条件成立的时候把事件名对应的数组取出来,循环一个一个执行 <br>
+<code>[fn,fn2]</code>        <code>dispatch(obj,evName);</code></p></li>
+<li rel="6"><p>解除绑定: <br>
+<code>removeEvent(obj,'click',fnName);</code> 找到对应的元素的事件的指定函数，然后删除 <br>
+例：</p></li>
+</ol>
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addEvent</span>(<span class="hljs-params">ele,evName,fn</span>)</span>{
+</div><div class="hljs-line">        <span class="hljs-comment">//看看这个ele下有没有区分事件的{}</span>
+</div><div class="hljs-line">        <span class="hljs-comment">//如果有那么就在刚才这个{}下继续添加事件以及函数</span>
+</div><div class="hljs-line">        <span class="hljs-comment">//没有就创建一个新的{}</span>
+</div><div class="hljs-line">        ele.bindEvent = ele.bindEvent || {};
+</div><div class="hljs-line">        <span class="hljs-comment">/*</span>
+</div><div class="hljs-line"><span class="hljs-comment">            如果对象上已经有了绑定的事件名，那么就用</span>
+</div><div class="hljs-line"><span class="hljs-comment">            之前的事件名属性进行添加函数</span>
+</div><div class="hljs-line"><span class="hljs-comment">            如果没有，就创建一个事件名和对应数组</span>
+</div><div class="hljs-line"><span class="hljs-comment">        */</span>
+</div><div class="hljs-line">        ele.bindEvent[evName] = ele.bindEvent[evName] || [];
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">        <span class="hljs-comment">//!ele.bindEvent[evName].some(e=&gt;e===fn)</span>
+</div><div class="hljs-line">        <span class="hljs-comment">/*</span>
+</div><div class="hljs-line"><span class="hljs-comment">            fn是否为函数 &amp;&amp; 数组中没有和fn一样的函数，才push传进来的函数</span>
+</div><div class="hljs-line"><span class="hljs-comment">        */</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> fn === <span class="hljs-string">'function'</span> &amp;&amp; !ele.bindEvent[evName].includes(fn)){
+</div><div class="hljs-line">            ele.bindEvent[evName].push(fn);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">dispatch</span>(<span class="hljs-params">ele,evName</span>)</span>{
+</div><div class="hljs-line">        <span class="hljs-comment">/*</span>
+</div><div class="hljs-line"><span class="hljs-comment">            先看看这个元素上有没有绑定过传进来的事件</span>
+</div><div class="hljs-line"><span class="hljs-comment">            如果没有就return</span>
+</div><div class="hljs-line"><span class="hljs-comment">            如果有，抓出来循环一个一个执行</span>
+</div><div class="hljs-line"><span class="hljs-comment">        */</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span>(!ele.bindEvent[evName])<span class="hljs-keyword">return</span>;
+</div><div class="hljs-line">        ele.bindEvent[evName].forEach(<span class="hljs-function"><span class="hljs-params">fn</span>=&gt;</span>{
+</div><div class="hljs-line">            fn.call(ele);
+</div><div class="hljs-line">        });
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">removeEvent</span>(<span class="hljs-params">ele,evName,fn</span>)</span>{
+</div><div class="hljs-line">        <span class="hljs-comment">//先看看指定对象有没有绑定的事件名</span>
+</div><div class="hljs-line">        <span class="hljs-comment">//没有就return，有就循环数组删除</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span>(!ele.bindEvent[evName])<span class="hljs-keyword">return</span>;
+</div><div class="hljs-line">        ele.bindEvent[evName] = ele.bindEvent[evName].filter(<span class="hljs-function"><span class="hljs-params">f</span>=&gt;</span>f!==fn);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-comment">//订阅</span>
+</div><div class="hljs-line">    addEvent(<span class="hljs-built_in">document</span>,<span class="hljs-string">'点击'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line">        <span class="hljs-comment">// alert(1);</span>
+</div><div class="hljs-line">        <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>);
+</div><div class="hljs-line">    });
+</div><div class="hljs-line">    addEvent(<span class="hljs-built_in">document</span>,<span class="hljs-string">'点击'</span>,fn);
+</div><div class="hljs-line">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fn</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line">        alert(<span class="hljs-number">2</span>);
+</div><div class="hljs-line">        removeEvent(<span class="hljs-built_in">document</span>,<span class="hljs-string">'点击'</span>,fn);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-built_in">document</span>.onclick = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line">        <span class="hljs-comment">//发布</span>
+</div><div class="hljs-line">        dispatch(<span class="hljs-built_in">document</span>,<span class="hljs-string">'点击'</span>);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.dir(<span class="hljs-built_in">document</span>);
+</div><div class="hljs-line"><wbr>
+</div></code></pre>
+
+
+
+<h3 id="面向对象版发布订阅">面向对象版发布订阅</h3>
+
+<p>例：</p>
+
+<pre class="prettyprint hljs-dark"><code class="hljs gauss"><div class="hljs-line"> class Pubsub {
+</div><div class="hljs-line">        add(obj,evName,<span class="hljs-function"><span class="hljs-keyword">fn</span>){</span>
+</div><div class="hljs-line"><span class="hljs-function">            obj.<span class="hljs-title">bindEvent</span> = obj.bindEvent || {}</span>;
+</div><div class="hljs-line">            obj.bindEvent[evName] = obj.bindEvent[evName] || [];
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span>(typeof <span class="hljs-function"><span class="hljs-keyword">fn</span> === 'function' &amp;&amp; !obj.bindEvent[evName].includes<span class="hljs-params">(<span class="hljs-keyword">fn</span>)</span>){</span>
+</div><div class="hljs-line"><span class="hljs-function">                obj.bindEvent[evName].<span class="hljs-keyword">push</span><span class="hljs-params">(<span class="hljs-keyword">fn</span>)</span></span>;
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        dispatch(obj,evName){
+</div><div class="hljs-line">            <span class="hljs-comment">//如果元素身上有bindEvent 并且 bindEvent也有某个事件</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span>(obj.bindEvent &amp;&amp; !obj.bindEvent[evName])<span class="hljs-keyword">return</span>;
+</div><div class="hljs-line">            obj.bindEvent[evName].forEach(<span class="hljs-function"><span class="hljs-keyword">fn</span>=&gt;{</span>
+</div><div class="hljs-line"><span class="hljs-function">                <span class="hljs-keyword">fn</span>.<span class="hljs-keyword">call</span><span class="hljs-params">(obj)</span></span>;
+</div><div class="hljs-line">            });
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        remove(obj,evName,<span class="hljs-function"><span class="hljs-keyword">fn</span>){</span>
+</div><div class="hljs-line"><span class="hljs-function">            <span class="hljs-keyword">if</span><span class="hljs-params">(!obj.bindEvent[evName])</span><span class="hljs-keyword">return</span></span>;
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span>(typeof <span class="hljs-function"><span class="hljs-keyword">fn</span> === 'function' &amp;&amp; obj.bindEvent[evName].includes<span class="hljs-params">(<span class="hljs-keyword">fn</span>)</span>){</span>
+</div><div class="hljs-line"><span class="hljs-function">                obj.bindEvent[evName] = obj.bindEvent[evName].<span class="hljs-title">filter</span><span class="hljs-params">(f=&gt;f!==<span class="hljs-keyword">fn</span>)</span></span>;
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    }   
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> o = <span class="hljs-keyword">new</span> Pubsub;
+</div><div class="hljs-line">    o.add(document,'看我心情',<span class="hljs-function"><span class="hljs-keyword">fn</span>)</span>;
+</div><div class="hljs-line">    o.add(document,'看我心情',<span class="hljs-function"><span class="hljs-keyword">fn</span>)</span>;
+</div><div class="hljs-line">    o.add(document,'看我心情',<span class="hljs-function"><span class="hljs-keyword">fn</span>)</span>;
+</div><div class="hljs-line">    function <span class="hljs-function"><span class="hljs-keyword">fn</span><span class="hljs-params">()</span>{</span>
+</div><div class="hljs-line"><span class="hljs-function">        alert<span class="hljs-params">(<span class="hljs-number">1</span>)</span></span>;
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    document.onclick = function(){
+</div><div class="hljs-line">        o.dispatch(this,'看我心情');
+</div><div class="hljs-line">    }
+</div></code></pre>
+
+
+
+<h2 id="jq的插件接口">jq的插件接口</h2>
+
+
+
+<h3 id="工具方法">工具方法</h3>
+
+<ul><li><p>$.  </p></li>
+<li><p>$.ajax()</p></li>
+<li><p>$.each()</p></li>
+<li><p>$.isArray() <br>
+<strong>注：</strong></p>
+
+<ol>
+<li rel="1"><p>不只JQ对象能使用，还可以处理一些原生的数据</p></li>
+<li rel="2"><p>工具方法扩展: <code>$.extend({})</code>  </p></li></ol></li>
+</ul>
+
+
+
+<h3 id="extend">$.extend();</h3>
+
+<ol><li rel="1"><p>浅拷贝 -&gt; Object.assign()</p></li>
+<li rel="2"><p>深拷贝 -&gt; deepClone</p></li>
+<li rel="3"><p>插件接口</p></li>
+</ol>
+
+<h3 id="功能方法">功能方法</h3>
+
+<p><code>$('#box').css();</code>   只能是jQ对象才能使用 <br>
+功能方法扩展： <code>$.fn.extend({})</code> <br>
+例：</p>
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"> $.fn.extend({    <span class="hljs-attr">scrollHeight</span>:<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>[<span class="hljs-number">0</span>].scrollHeight;
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    });
+</div><div class="hljs-line">    <span class="hljs-comment">// console.log($('#box').scrollHeight());直接用插件</span>
+</div></code></pre>
+
+<p>例：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"> <span class="hljs-comment">//去除尾空格 trimLeft</span>
+</div><div class="hljs-line"> $.extend({
+</div><div class="hljs-line">       <span class="hljs-attr">trimLast</span>:<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">str</span>)</span>{
+</div><div class="hljs-line">          <span class="hljs-keyword">return</span> str.replace(<span class="hljs-regexp">/\s+$/g</span>,<span class="hljs-string">''</span>);
+</div><div class="hljs-line">       }
+</div><div class="hljs-line">     });
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    $.extend({
+</div><div class="hljs-line">         <span class="hljs-attr">trimLast</span>:<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">str</span>)</span>{
+</div><div class="hljs-line">          <span class="hljs-keyword">return</span> str.replace(<span class="hljs-regexp">/\s+$/g</span>,<span class="hljs-string">'呵呵'</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">     });
+</div><div class="hljs-line">     <span class="hljs-built_in">console</span>.log($.trimLast(<span class="hljs-string">'   哈哈哈   '</span>));
+</div></code></pre>
+
+<p>例：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs lsl"><div class="hljs-line">let arr = [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>];
+</div><div class="hljs-line">let arr2 = $.extend([],arr); <span class="hljs-comment">//浅拷贝</span>
+</div><div class="hljs-line">arr2[<span class="hljs-number">4</span>].push(<span class="hljs-number">5</span>);
+</div><div class="hljs-line">console.log(arr2,arr);
+</div></code></pre>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line">深拷贝
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> arr = [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,[<span class="hljs-number">5</span>]];
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> arr2 = $.extend(<span class="hljs-literal">true</span>,[],arr); 
+</div><div class="hljs-line">arr2[<span class="hljs-number">4</span>].push(<span class="hljs-number">5</span>);
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log(arr2);
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log($.isArray(arr));
+</div></code></pre>
+
+
+
+<h2 id="jq运动">jq运动</h2>
+
+<blockquote>
+  <p>$(‘#box’).animate({})  所有的运动都是animate二次封装的</p>
+</blockquote>
+
+<ul><li><p>显示隐藏</p>
+
+<ul>
+<li><p>show()  block</p></li>
+<li><p>hide()  none</p></li>
+<li><p>toggle</p></li></ul></li>
+<li><p>改变高度</p>
+
+<ul>
+<li><p>slideDown</p></li>
+<li><p>slideUp</p></li>
+<li><p>slideToggle</p></li></ul></li>
+<li><p>淡入淡出</p>
+
+<ul>
+<li><p>fadeIn</p></li>
+<li><p>fadeOut</p></li>
+<li><p>fadeToggle</p></li></ul></li>
+</ul>
+
+<p>例：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs awk"><div class="hljs-line"> <span class="hljs-regexp">//</span> $(<span class="hljs-string">'#box'</span>).animate({
+</div><div class="hljs-line">    <span class="hljs-regexp">//</span>     width:<span class="hljs-number">100</span>,
+</div><div class="hljs-line">    <span class="hljs-regexp">//</span>     height:<span class="hljs-number">200</span>,
+</div><div class="hljs-line">    <span class="hljs-regexp">//</span>     fontSize:<span class="hljs-number">50</span>
+</div><div class="hljs-line">    <span class="hljs-regexp">//</span> },<span class="hljs-number">2000</span>,<span class="hljs-keyword">function</span>(){<span class="hljs-regexp">//</span>回调函数
+</div><div class="hljs-line">    <span class="hljs-regexp">//</span>     console.log(<span class="hljs-string">'玩完'</span>);
+</div><div class="hljs-line">    <span class="hljs-regexp">//</span> });
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    $(document).click(<span class="hljs-keyword">function</span>(){
+</div><div class="hljs-line">        <span class="hljs-regexp">//</span> $(<span class="hljs-string">'#box'</span>).hide(<span class="hljs-number">1000</span>);
+</div><div class="hljs-line">        <span class="hljs-regexp">//</span> $(<span class="hljs-string">'#box'</span>).slideUp(<span class="hljs-number">200</span>);
+</div><div class="hljs-line">        $(<span class="hljs-string">'#box'</span>).fadeOut(<span class="hljs-number">200</span>);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    });
+</div></code></pre></div></body></html>
