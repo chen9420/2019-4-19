@@ -47,10 +47,11 @@
                 input.select();//input 获取焦点事件
 
                 let that = this;
-
+                
+                
                 input.onblur = function () {
                     let v = this.value;//input的value
-                    let cm = arr.some(e => e.title === v);//判断input里的内容是否跟arr的title重复了
+                    let cm = that.arr.some(e => e.title === v);//判断input里的内容是否跟arr的title重复了
                     console.log(cm)
                     if (!cm) {
                         that.arr.push({

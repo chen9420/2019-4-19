@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <button id="btn">新建文件夹</button>
+    <ul id="ul">
+        <!-- <li><input type="text" value="新建文件夹"/></li> -->
+    </ul>
+    <script>
+        let arr = [
+            {
+                title: '新建文件夹',
+                id: 0
+            },
+            {
+                title: '我的音乐',
+                id: 1
+            },
+            {
+                title: '我的歌曲',
+                id: 2
+            },
+        ];
+        class xj {
+            constructor(arr) {
+                this.arr = arr;
+            }
+            render() {
+                let html = '';
+                this.arr.forEach(e => {
+                    html += `<li><input type ='text' value = '${e.title}'/></li>`
+                    ul.innerHTML = html
+                })
+            }
+            click() {
+                let li = document.createElement('li');
+                this.input = document.createElement('input');
+                this.input.value = '新建文件夹';
+
+                li.append(this.input);
+                ul.append(li);
+                this.input.select();//input 获取焦点事件
+                let that = this;
+                this.input.onblur = function () {
+                    that.blur();
+                }
+            }
+            blur() {
+                let v = this.input.value;//input的value
+                let cm = this.arr.some(e => e.title === v);//判断input里的内容是否跟arr的title重复了
+                if (!cm) {
+                    this.arr.push({
+                        title: v,
+                        id: +new Date
+                    });
+                } else {
+                    let num = 0;
+                    let v2 = v;
+                    while (cm) {
+                        v2 = v2.replace(/\(\d+\)/, '') + '(' + (++num) + ')';
+                        cm = this.arr.some(e => e.title === v2)
+                    }
+                    this.arr.push({
+                        title: v2,
+                        id: +new Date
+                    })
+                }
+                this.render();
+            }
+        }
+        let o = new xj(arr);
+        o.render();
+        btn.onclick = function () {
+            o.click()
+        }
+
+
+    </script>
+
+</body>
+
+</html>
