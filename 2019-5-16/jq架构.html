@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="box"></div>
+    <div id="box2"></div>
+    <script>
+        (function (global, factory) {
+            factory(global)
+        })(this, function (global, noGlobal) {
+            function jquery(selector) {
+                return new fn(selector);
+            }
+            let init = jquery.prototype = {
+                constructor: jquery,
+                addClass: function (...arg) {
+                    console.log(this, ...arg)//fn实例 "active"
+                    for (let i = 0; i < this.length; i++) {
+                        this[i].classList.add(arg);//添加类名
+                    }
+                    return this;
+                }
+            }
+            let fn = init.fn = function (selector) {//相当于jquery.prototype=init  jquery.prototype.fn = fn
+                let ele = document.querySelectorAll(selector);//获取元素
+                ele.forEach((ele, i) => this[i] = ele);
+                this.length = ele.length;
+            }
+            fn.prototype = init;//相当于fn.prototype = jquery.prototype;
+            global.$ = jquery;
+        })
+        // function jquery(){
+        //     console.log(1);
+        // }
+        let box = $('#box');
+        //console.log(box);//init.fn
+        box.addClass('active').addClass('show');
+         $('#box2').addClass('act').addClass('shw');
+    </script>
+
+</body>
+
+</html>

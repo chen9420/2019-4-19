@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        function add(ele, evName, fn) {
+            ele.bindEvent = ele.bindEvent || {};
+            ele.bindEvent[evName] = ele.bindEvent[evName] || [];
+            if (typeof fn === 'function' && !ele.bindEvent[evName].includes(fn)) {
+                ele.bindEvent[evName].push(fn);
+            }
+        }
+        function dispatch(ele, evName) {
+            if (!ele.bindEvent[evName]) return;
+            ele.bindEvent[evName].forEach(element => {
+                element.call(ele);
+            });
+        }
+        function remove(ele, evName, fn) {
+            if (!ele.bindEvent[evName]) return;
+            ele.bindEvent[evName] = ele.bindEvent[evName].filter(f => {
+                f!== fn;
+            })
+        }
+        //订阅
+        add(document,'点击',function(){
+            console.log(this);
+        })
+        add(document,'点击',fn);
+        function fn(){
+            alert(2);
+           remove(document,'点击',fn)
+        }
+        //发布 
+        document.onclick =function(){//document点击时发布
+            dispatch(document,'点击')
+        }
+        
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        //普通函数
+        // function fn(a, b, c,d) {
+        //     console.log(this, a, b, c,d);
+        // }
+        // Function.prototype.bind = function (context, ...arg) {
+        //     //this为fn实例
+        //     let that = this;
+        //     function bound(...args) {
+        //         //this为window;
+        //         that.apply(context, [...arg, ...args])
+
+        //     }
+        //     return bound;
+
+        // }
+        // let f = fn.bind(document, 1, 2, 3);
+        // f(4);
+
+        //构造函数
+        function fn(a, b, c, d) {
+            this.a = a;
+            console.log(this, a, b, c, d);
+        }
+        Function.prototype.bind = function (context, ...arg) {
+            //this为fn实例
+            let that = this;
+            function bound(...args) {
+                if(this instanceof bound){
+                   //console.log(this)//bound 说明 new了bound
+                    that.apply(this, [...arg, ...args])
+                }else{
+                    that.apply(context, [...arg, ...args])
+                }
+                //this为window;
+            }
+            if(this.prototype){
+                bound.prototype = this.prototype;
+            }
+            return bound;
+        }
+        fn.prototype.aaa = '变化';
+        let f = fn.bind(document, 1, 2, 3);
+        console.log(new f(5).aaa)
+       
+    </script>
+</body>
+
+</html>

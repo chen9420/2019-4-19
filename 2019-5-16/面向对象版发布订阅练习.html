@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        class subscribes {
+            addEvent(ele, evName, fn) {
+                ele.bindEvent = ele.bindEvent || {};
+                ele.bindEvent[evName] = ele.bindEvent[evName] || [];
+                if (typeof fn === 'function' && !ele.bindEvent[evName].includes(fn)) {
+                    ele.bindEvent[evName].push(fn);
+                }
+            }
+            dispatch(ele, evName) {
+                if (!ele.bindEvent[evName]) return;
+                ele.bindEvent[evName].forEach(fn => {
+                    fn.call(ele);
+                });
+            }
+            removeEvent(ele, evName, fn) {
+                if (!ele.bindEvent[evName]) return;
+                ele.bindEvent[evName] = ele.bindEvent[evName].filter(f => f !== fn);
+            }
+        }
+        new subscribes().addEvent(document, '点击', function () {
+            // alert(1);
+            console.log(this);
+        })
+        new subscribes().addEvent(document, '点击', fn);
+        function fn() {
+            alert(2);
+            new subscribes().removeEvent(document, '点击', fn);
+        }
+        document.onclick = function () {
+            //发布
+            new subscribes().dispatch(document, '点击');
+        }
+    </script>
+</body>
+
+</html>

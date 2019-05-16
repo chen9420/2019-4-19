@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #box {
+            width: 100px;
+            height: 100px;
+            background: red;
+            padding: 5px;
+            border: 1px solid #000;
+            -position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="width:300px;position: relative">
+        <div id="box"></div>
+    </div>
+    <button id="btn">点击</button>
+    <script src="./jquery-1.11.3.js"></script>
+    <script>
+        // $('#box').attr('index', '0');//添加index方法
+        // $('#box').removeAttr('index');//删除index属性
+
+        // console.log($('#box').width());
+        // console.log($('#box').innerWidth());//$('#box')[0].clientWidth//包含padding 不包含border
+        // console.log($('#box').outerWidth());//offsetWidth //包含padding 不包含border
+
+        // console.log($('#box').offset().top);//绝对位置 8 默认的8
+        // console.log($('#box').position().top)//相对父级的位置
+        // console.log($(document).scrollTop());//滚动距离
+        $('#btn').on('click', function () {
+            alert(1);
+        });
+        $('#box').mouseover(function () {
+            $('#btn').trigger('click');
+        });
+
+    </script>
+
+</body>
+
+</html>
