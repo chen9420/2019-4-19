@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            background: url(img/zpbg.png) no-repeat center center;
+            background-size: cover;
+            display: flex;
+        }
+
+        ul,
+        li {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: #b6bdcf;
+        }
+
+        #content {
+            width: 700px;
+            height: 460px;
+            border-radius: 10px;
+            border: 1px solid #30343f;
+            margin: auto;
+            /* background: url(img/logo.png) no-repeat 25px 25px #252934; */
+            background: #252934;
+            box-sizing: border-box;
+            padding: 84px 0px 0px 25px;
+        }
+
+        #leftList {
+            float: left;
+            width: 60px;
+            padding-right: 12px;
+            height: 100%;
+            background: url(img/leftListBg.png) no-repeat right top;
+        }
+
+        #leftList li {
+            text-align: right;
+            height: 68px;
+            padding-top: 12px;
+            color: #6a7686;
+            font: 10px/18px "微软雅黑";
+        }
+
+        #leftList li span {
+            font-size: 12px;
+            display: block;
+            cursor: pointer;
+        }
+
+        #leftList .active span {
+            color: #ff2c4f;
+        }
+
+        #right {
+            width: 600px;
+            height: 100%;
+            float: left;
+        }
+
+        #rightList li {
+            height: 82px;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 20px 25px 20px 30px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        #rightList li:hover {
+            background-color: #1e212a;
+        }
+
+        #rightList li:hover .num {
+            color: #ff2c4f;
+        }
+
+        #rightList li:hover:before {
+            content: "";
+            width: 2px;
+            height: 54px;
+            position: absolute;
+            background-color: #ff2c4f;
+            left: -3px;
+            top: 10px;
+        }
+
+        #rightList li:after {
+            content: "";
+            width: 543px;
+            height: 1px;
+            position: absolute;
+            bottom: 0px;
+            right: 25px;
+            background: url(img/lineBg.png) repeat-x;
+        }
+
+        #rightList .num {
+            font-size: 30px;
+            font-family: arial;
+            color: #6a7686;
+            float: left;
+            width: 36px;
+            height: 40px;
+            border-right: 1px solid #303642;
+        }
+
+        #rightList .list {
+            float: left;
+            width: 500px;
+            margin-left: 6px;
+            font-size: 14px;
+            color: #b6bdcf;
+            font-family: "微软雅黑";
+        }
+
+        #rightList .list span {
+            float: left;
+        }
+
+        .list>a:nth-of-type(1) {
+            height: 26px;
+            float: none;
+            font-size: 14px;
+        }
+
+        .job {
+            margin-right: 15px;
+        }
+
+        #rightList .list time {
+            float: right;
+            color: #606a7a;
+        }
+
+        .list .text {
+            float: left;
+            width: 430px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .list a {
+            float: right;
+            font-size: 12px;
+        }
+
+        nav {
+            font-size: 0px;
+            text-align: center;
+        }
+
+        nav a {
+            font: 12px/46px "微软雅黑";
+            display: inline-block;
+            vertical-align: middle;
+            width: 24px;
+        }
+
+        nav a.active {
+            color: #eb2a4b;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content">
+        <ul id="leftList">
+            <li _class="active"><span>社会招聘</span>society</li>
+            <li><span>校园招聘</span>campus</li>
+        </ul>
+        <div id="right">
+            <ul id="rightList">
+            </ul>
+            <nav id="nav">
+            </nav>
+        </div>
+    </div>
+    <script src="js/data.js"></script>
+    <script>
+        class list {
+            constructor(data) {
+                this.data = data;
+                this.dataName = 'sh';
+                this.page = 1;//第一页
+                this.pageNum = 0;
+                this.list = leftList.querySelectorAll('li');
+                this.listOne = this.list[0];
+            }
+            hs() {
+                let hash = window.location.hash;
+                if (hash) {
+                    hash.replace(/#hash=([a-z]{2})&page=(\d+)/, ($0, $1, $2) => {
+                        this.dataName = $1;
+                        this.pageNum = Math.ceil(this.data[this.dataName].text.length / 4);
+                        if ($2 > this.pageNum) {
+                            this.page = this.pageNum;
+                            window.location.hash = 'hash=' + this.dataName + '&page=' + this.page;
+                        } else {
+                            if ($2 < 1) {
+                                window.localtion.hash = 'hash=' + this.dataName + '&page=1';
+                            }
+                            this.page = $2;
+                        }
+                    });
+                }
+            }
+            render() {
+                let d = this.data[this.dataName].text;//数据
+                //console.log(d);
+                let html = '';
+                for (let i = (this.page - 1) * 4; i < this.page * 4; i++) {
+                    if (d[i]) {
+                        html += `<li>
+					<span class="num">${this.data.add0(i + 1)}</span>
+					<div class="list">
+						<a href=""><span class="job">职位需求:${d[i].zw}</span><span>需求人数：${d[i].rs}名</span><time>${d[i].sj[0]}${-d[i].sj[1]}${-d[i].sj[2]}</time></a>
+						<p><span class="text">岗位要求：${d[i].info[0].l.join('').substr(0, 30)}...</span><a href="content.html?hash=${this.dataName}&id=${i}&page=${this.page}">查看详情>></a></p>
+					</div>
+				</li>`
+                    }
+                }
+                rightList.innerHTML = html;
+            }
+            renderPage() {
+                this.pageNum = Math.ceil(this.data[this.dataName].text.length / 4);//放页码的个数
+                if (this.page < 1) this.page = 1;
+                if (this.page > this.pageNum - 1) this.page = this.pageNum;
+                let html = '';
+                html = `<a href="javascript:;">&lt;</a>`
+                for (let i = 0; i < this.pageNum; i++) {
+                    html += `<a href="javascript:;" class="${i === (this.page - 1) ? 'active' : ''}">${i + 1}</a>`
+                }
+                html += `<a href="javascript:;">&gt;</a> `
+                nav.innerHTML = html;
+            }
+            xh() {
+                this.list.forEach((ele, i, all) => {
+                    let that = this;
+                    ele.onclick = function () {
+                        that.listOne.className = '';
+                        this.className = 'active';
+                        that.dataName = that.data.list[i].lx;
+                        that.page = 1;
+                        window.location.hash = 'hash=' + that.dataName + '&page=' + that.page;
+                        that.listOne = this;
+                    }
+                })
+            }
+            onhaschang() {
+                this.list.forEach((ele, i, all) => {
+                    ele.className = '';//清空所有，给当前加上
+                    if (this.dataName === 'sh') all[0].className = 'active';
+                    if (this.dataName === 'xy') all[1].className = 'active';
+                })
+                this.renderPage();
+                this.render();
+            }
+            onclick(ev) {
+                if (ev.target.innerHTML === '&lt;') {
+                    this.page--;
+                } else if (ev.target.innerHTML === '&gt;') {
+                    this.page++;
+                } else {
+                    this.page = parseInt(ev.target.innerHTML);
+                }
+                if (this.page < 1) this.page = 1;
+                if (this.page > this.pageNum - 1) this.page = this.pageNum;
+                window.location.hash = 'hash=' + this.dataName + '&page=' + this.page;
+            }
+            navs() {
+                let that = this;
+                nav.onclick = function (ev) {
+                    that.onclick(ev);
+                }
+            }
+        }
+        let lis = new list(data);
+        lis.hs();
+        lis.xh();
+        lis.navs();
+        window.onhashchange = function () {
+            lis.onhaschang();
+        }
+        lis.renderPage();
+        lis.render();
+
+
+    </script>
+</body>
+
+</html>
